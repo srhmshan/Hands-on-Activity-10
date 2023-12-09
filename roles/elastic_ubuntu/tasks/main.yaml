@@ -1,0 +1,69 @@
+---
+
+  - name: Install necessary prerequisites
+    apt:
+      name:
+        - default-jre
+        - apt-transport-https
+        - curl
+        - software-properties-common
+      state: present
+    become: yes
+
+  - name: Add Elasticsearch APT repository GPG key
+    apt_key:
+      url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    become: yes
+
+  - name: Add the Elasticsearch APT repository
+    apt_repository:
+      repo: "deb https://artifacts.elastic.co/packages/7.x/apt stable main"
+      state: present
+    become: yes
+
+  - name: Install Elasticsearch
+    apt:
+      name: elasticsearch
+      state: present
+    become: yes
+
+  - name: Enable and start Elasticsearch service
+    systemd:
+      name: elasticsearch
+      enabled: yes
+      state: started
+    become: yes
+
+  - name: Install Kibana
+    apt:
+      name: kibana
+      state: present
+    become: yes
+
+  - name: Enable and start Kibana service
+    systemd:
+      name: kibana
+      enabled: yes
+      state: started
+    become: yes
+
+  - name: Install Logstash
+    apt:
+      name: logstash
+      state: present
+    become: yes
+
+  - name: Enable and start Logstash service
+    systemd:
+      name: logstash
+      enabled: yes
+      state: started
+    become: yes
+
+  - name: Restart Elasticsearch and Kibana services
+    systemd:
+      name: "{{ item }}"
+      state: restarted
+    loop:
+      - elasticsearch
+      - kibana
